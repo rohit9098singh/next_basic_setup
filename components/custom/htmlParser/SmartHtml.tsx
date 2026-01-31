@@ -1,5 +1,5 @@
 "use client";
-import parse, { domToReact } from "html-react-parser";
+import parse, { domToReact, Element, DOMNode } from "html-react-parser";
 import React from "react";
 
 type ComponentMap = {
@@ -36,7 +36,8 @@ export default function SmartHtml({
   return (
     <>
       {parse(cleanHtml, {
-        replace(node: any) {
+        replace(node: DOMNode) {
+          if (!(node instanceof Element)) return;
           if (!node.name) return;
 
           // hard security rule
@@ -50,7 +51,7 @@ export default function SmartHtml({
               classMap[node.name] || node.attribs?.class,
           };
 
-          const children = domToReact(node.children);
+          const children = domToReact(node.children as DOMNode[]);
 
           // if custom component provided
           if (TagComponent) {
